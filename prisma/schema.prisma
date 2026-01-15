@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")  // ← это ОБЯЗАТЕЛЬНО для Prisma 6
 }
 
 generator client {
@@ -17,44 +11,31 @@ model User {
   id        Int      @id @default(autoincrement())
   firstname String
   lastname  String
-  
-  // Связь с корзиной - опциональная
-  cart      Cart?    @relation  // только название, без fields и references
+  avatar String?
+  phoneNumber String @unique
+  cart      Cart?    @relation
   cartId    Int?     @unique
-  
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  @@map("users")
+  updatedAt DateTime? @updatedAt
 }
 
 model Cart {
   id        Int         @id @default(autoincrement())
-  
-  // Связь с пользователем - ОБЯЗАТЕЛЬНАЯ, указываем fields и references
   user      User        @relation(fields: [userId], references: [id])
   userId    Int         @unique
-  
   items     CartItem[]
-  
   createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  
-  @@map("carts")
+  updatedAt DateTime?   @updatedAt
 }
 
 model CartItem {
   id        Int     @id @default(autoincrement())
   quantity  Int     @default(1)
-  
   cart      Cart    @relation(fields: [cartId], references: [id])
   cartId    Int
-  
   product   Product @relation(fields: [productId], references: [id])
   productId Int
-  
   @@unique([cartId, productId])
-  @@map("cart_items")
 }
 
 model Product {
@@ -63,11 +44,7 @@ model Product {
   description String?
   image       String?
   price       Float?
-  
   cartItems   CartItem[]
-  
   createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  
-  @@map("products")
+  updatedAt   DateTime?   @updatedAt
 }
