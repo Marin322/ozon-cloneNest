@@ -9,8 +9,8 @@ generator client {
 
 model User {
   id        Int      @id @default(autoincrement())
-  firstname String
-  lastname  String
+  firstname String?
+  lastname  String?
   avatar String?
   phoneNumber String @unique
   cart      Cart?    @relation
